@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hall Financial | Mortgage Payment Calculator</title>
+  <style>
+    :root {
+      --navy: #171F5D;
+      --navy-2: #162384;
+      --orange: #FF6D00;
+      --orange-2: #FD6D21;
+      --cream: #FFF4EB;
+      --input: #FFE4CC;
+      --result: #FFE8D2;
+      --gray: #5C6370;
+      --line: #D0D4E0;
+      --bg: #F7F8FC;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Calibri, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+    }
+    header {
+      background: var(--navy);
+      color: #fff;
+      padding: 22px 24px 18px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 0.04em;
+    }
+    header p {
+      margin: 6px 0 0;
+      color: var(--input);
+      font-size: 14px;
+    }
+    header a { color: #fff; }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 800px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .card h2 {
+      margin: 0;
+      padding: 10px 14px;
+      background: var(--orange);
+      color: #fff;
+      font-size: 15px;
+    }
+    .card h2.navy { background: var(--navy); }
+    .pad { padding: 12px 14px 16px; }
+    label {
+      display: block;
+      font-size: 13px;
+      margin: 10px 0 4px;
+      color: var(--navy);
+    }
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: var(--input);
+      color: var(--navy-2);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    input:focus, select:focus {
+      outline: 2px solid var(--orange);
+      background: #fff;
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--gray);
+      margin-top: 3px;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .row:last-child { border-bottom: 0; }
+    .row span:last-child { font-weight: 700; text-align: right; }
+    .total {
+      background: var(--orange);
+      color: #fff;
+      margin: 10px -14px -16px;
+      padding: 12px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .total b { font-size: 22px; color: #fff; }
+    .pmi-line {
+      background: var(--result);
+      margin: 8px -14px 0;
+      padding: 10px 14px;
+      display: none;
+      justify-content: space-between;
+      font-weight: 700;
+    }
+    .pmi-line.show { display: flex; }
+    .kpis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .kpi {
+      background: var(--cream);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+    }
+    .kpi .l { font-size: 11px; color: var(--gray); }
+    .kpi .v { font-size: 16px; font-weight: 700; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      background: var(--orange);
+      color: #fff;
+      text-align: right;
+      padding: 6px 8px;
+      font-weight: 700;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    td {
+      padding: 5px 8px;
+      text-align: right;
+      border-bottom: 1px solid #eee;
+    }
+    tr:nth-child(even) td { background: var(--bg); }
+    .note {
+      font-size: 12px;
+      color: var(--gray);
+      line-height: 1.45;
+      margin-top: 16px;
+    }
+    footer {
+      background: var(--navy);
+      color: var(--input);
+      padding: 16px 24px;
+      font-size: 12px;
+    }
+    .warn {
+      color: #b42318;
+      font-size: 12px;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>HALL FINANCIAL</h1>
+    <p>
+      Mortgage Payment Calculator · Call Hall First ·
+      <a href="tel:8662255425">866-CALL-HALL</a> ·
+      NMLS #1467435 ·
+      <a href="https://callhallfirst.com">callhallfirst.com</a>
+    </p>
+  </header>
+
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>INPUTS</h2>
+        <div class="pad">
+          <label for="home">Home value (appraised)</label>
+          <input id="home" type="number" min="1" step="1000" value="200000" />
+
+          <label for="loan">Loan / remaining balance</label>
+          <input id="loan" type="number" min="0" step="1000" value="100000" />
+
+          <label for="rate">Annual interest rate (%)</label>
+          <input id="rate" type="number" min="0" max="25" step="0.125" value="6" />
+
+          <label for="term">Term (years)</label>
+          <input id="term" type="number" min="1" max="40" step="1" value="30" />
+
+          <label for="ins">Monthly homeowners insurance</label>
+          <input id="ins" type="number" min="0" step="1" value="100" />
+
+          <label for="tax">Monthly property taxes</label>
+          <input id="tax" type="number" min="0" step="1" value="120" />
+
+          <label for="closing">Closing costs</label>
+          <input id="closing" type="number" min="0" step="100" value="3000" />
+
+          <label for="roll">Roll closing costs into loan?</label>
+          <select id="roll">
+            <option value="Yes" selected>Yes</option>
+            <option value="No">No</option>
+          </select>
+
+          <label for="cashout">Cash-out amount (max 80% LTV)</label>
+          <input id="cashout" type="number" min="0" step="100" value="0" />
+          <div class="hint" id="maxHint">Max cash-out updates from home value and loan.</div>
+          <div class="warn" id="cashWarn"></div>
+
+          <label for="pmiRate" id="pmiLabel">PMI annual rate (used only if LTV &gt; 80%)</label>
+          <input id="pmiRate" type="number" min="0" max="5" step="0.01" value="0.50" />
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="navy">MONTHLY PAYMENT</h2>
+        <div class="pad">
+          <div class="row"><span>Principal &amp; interest (P&amp;I)</span><span id="pi">$0.00</span></div>
+          <div class="row"><span>Homeowners insurance</span><span id="insOut">$0.00</span></div>
+          <div class="row"><span>Property taxes</span><span id="taxOut">$0.00</span></div>
+          <div class="row"><span>Monthly escrow (T + I)</span><span id="escrow">$0.00</span></div>
+          <div class="pmi-line" id="pmiLine">
+            <span>Private mortgage insurance (PMI)</span>
+            <span id="pmiOut">$0.00</span>
+          </div>
+          <div class="total">
+            <span id="totalLabel">TOTAL MONTHLY PAYMENT (PITI)</span>
+            <b id="piti">$0.00</b>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:16px">
+      <h2 class="navy">RESULTS</h2>
+      <div class="pad">
+        <div class="kpis">
+          <div class="kpi"><div class="l">Amount financed</div><div class="v" id="financed">$0</div></div>
+          <div class="kpi"><div class="l">LTV</div><div class="v" id="ltv">0%</div></div>
+          <div class="kpi"><div class="l">Note rate</div><div class="v" id="noteRate">0%</div></div>
+          <div class="kpi"><div class="l">Estimated APR</div><div class="v" id="apr">0%</div></div>
+          <div class="kpi"><div class="l">APR vs note</div><div class="v" id="aprSpread">0</div></div>
+          <div class="kpi"><div class="l">Cash at closing</div><div class="v" id="cashClose">$0</div></div>
+          <div class="kpi"><div class="l">Max cash-out (80% LTV)</div><div class="v" id="maxCash">$0</div></div>
+          <div class="kpi"><div class="l">Cash-out used</div><div class="v" id="cashUsed">$0</div></div>
+          <div class="kpi"><div class="l">Total interest</div><div class="v" id="totInt">$0</div></div>
+          <div class="kpi"><div class="l">Month 1 interest / principal</div><div class="v" id="m1">$0 / $0</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <h2>YEARLY SUMMARY (first 10 years)</h2>
+      <div class="pad" style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Year</th>
+              <th>P&amp;I paid</th>
+              <th>Interest</th>
+              <th>Principal</th>
+              <th>Ending balance</th>
+            </tr>
+          </thead>
+          <tbody id="years"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="note">
+      Hall Financial estimate only — NMLS #1467435. Not a commitment to lend.
+      P&amp;I uses standard monthly PMT. Amount financed = remaining balance + cash-out
+      + closing costs if rolled in. Cash-out is capped so financed amount cannot exceed
+      80% of home value. PMI is added only when LTV &gt; 80%, at the annual rate you enter,
+      and is shown above the total payment when it applies.
+      Estimated APR treats closing costs as prepaid finance charges (simplified TILA).
+      Confirm figures with your Hall Financial loan officer.
+    </p>
+  </main>
+
+  <footer>
+    Hall Financial · Call Hall First · 866-CALL-HALL · NMLS #1467435 · callhallfirst.com
+  </footer>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const money = (n) => (n || 0).toLocaleString("en-US", { style: "currency", currency: "USD" });
+    const pct = (n, d = 1) => ((n || 0) * 100).toFixed(d) + "%";
+
+    function pmt(annualRate, years, principal) {
+      const n = years * 12;
+      const r = annualRate / 12;
+      if (principal <= 0 || years <= 0) return 0;
+      if (r === 0) return principal / n;
+      return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+    }
+
+    function rate(nper, pmtAmt, pv) {
+      if (nper <= 0 || pmtAmt <= 0 || pv >= 0) return 0;
+      let r = 0.005;
+      for (let i = 0; i < 50; i++) {
+        const pow = Math.pow(1 + r, nper);
+        const f = pv * (r * pow) / (pow - 1) + pmtAmt;
+        const df = pv * (pow * (nper * r - pow + 1) + 1) / Math.pow(pow - 1, 2);
+        const next = r - f / df;
+        if (!isFinite(next) || next <= -0.99) break;
+        if (Math.abs(next - r) < 1e-12) { r = next; break; }
+        r = next;
+      }
+      return r;
+    }
+
+    function calc() {
+      const home = Math.max(0, +$("home").value || 0);
+      const loan = Math.max(0, +$("loan").value || 0);
+      const annual = Math.max(0, (+$("rate").value || 0) / 100);
+      const years = Math.max(0, +$("term").value || 0);
+      const ins = Math.max(0, +$("ins").value || 0);
+      const tax = Math.max(0, +$("tax").value || 0);
+      const closing = Math.max(0, +$("closing").value || 0);
+      const roll = $("roll").value === "Yes";
+      let cashout = Math.max(0, +$("cashout").value || 0);
+      const pmiAnnual = Math.max(0, (+$("pmiRate").value || 0) / 100);
+
+      const financedCosts = roll ? closing : 0;
+      const maxCash = Math.max(0, home * 0.8 - loan - financedCosts);
+      $("maxHint").textContent = "Max cash-out at 80% LTV: " + money(maxCash);
+      $("cashWarn").textContent = "";
+      if (cashout > maxCash + 0.005) {
+        $("cashWarn").textContent = "Cash-out capped at " + money(maxCash) + " so LTV does not exceed 80%.";
+        cashout = maxCash;
+        $("cashout").value = maxCash.toFixed(2);
+      }
+
+      const financed = loan + cashout + financedCosts;
+      const ltv = home > 0 ? financed / home : 0;
+      const pmiReq = ltv > 0.8;
+      const monthlyPMI = pmiReq ? financed * pmiAnnual / 12 : 0;
+      const monthlyPI = pmt(annual, years, financed);
+      const escrow = ins + tax;
+      const piti = monthlyPI + escrow + monthlyPMI;
+      const nper = years * 12;
+      const cashAtClose = (roll ? 0 : closing) - cashout;
+      const tilaAF = Math.max(financed - closing, 0.01);
+      const monthlyAPR = rate(nper, monthlyPI, -tilaAF);
+      const apr = monthlyAPR * 12;
+      const m1int = financed * (annual / 12);
+      const m1prin = monthlyPI - m1int;
+
+      $("pi").textContent = money(monthlyPI);
+      $("insOut").textContent = money(ins);
+      $("taxOut").textContent = money(tax);
+      $("escrow").textContent = money(escrow);
+      $("piti").textContent = money(piti);
+      $("totalLabel").textContent = pmiReq
+        ? "TOTAL MONTHLY PAYMENT (PITIA)"
+        : "TOTAL MONTHLY PAYMENT (PITI)";
+
+      const pmiLine = $("pmiLine");
+      if (pmiReq) {
+        pmiLine.classList.add("show");
+        $("pmiOut").textContent = money(monthlyPMI);
+        $("pmiLabel").textContent = "PMI annual rate (LTV > 80%)";
+      } else {
+        pmiLine.classList.remove("show");
+        $("pmiLabel").textContent = "PMI annual rate (not used — LTV ≤ 80%)";
+      }
+
+      $("financed").textContent = money(financed);
+      $("ltv").textContent = pct(ltv, 1);
+      $("noteRate").textContent = pct(annual, 3);
+      $("apr").textContent = pct(apr, 3);
+      $("aprSpread").textContent = (apr - annual >= 0 ? "+" : "") + ((apr - annual) * 100).toFixed(3) + " pts";
+      $("cashClose").textContent = cashAtClose > 0
+        ? money(cashAtClose) + " due"
+        : cashAtClose < 0
+          ? money(-cashAtClose) + " back to you"
+          : "None";
+      $("maxCash").textContent = money(maxCash);
+      $("cashUsed").textContent = money(cashout);
+      $("totInt").textContent = money(monthlyPI * nper - financed);
+      $("m1").textContent = money(m1int) + " / " + money(m1prin);
+
+      const tbody = $("years");
+      tbody.innerHTML = "";
+      let bal = financed;
+      const r = annual / 12;
+      const maxY = Math.min(10, years);
+      for (let y = 1; y <= maxY; y++) {
+        let intY = 0, prinY = 0, piY = 0;
+        for (let m = 0; m < 12 && bal > 0.005; m++) {
+          const interest = bal * r;
+          const principal = Math.min(monthlyPI - interest, bal);
+          intY += interest;
+          prinY += principal;
+          piY += monthlyPI;
+          bal = Math.max(0, bal - principal);
+        }
+        tbody.insertAdjacentHTML("beforeend",
+          `<tr><td>${y}</td><td>${money(piY)}</td><td>${money(intY)}</td><td>${money(prinY)}</td><td>${money(bal)}</td></tr>`
+        );
+      }
+    }
+
+    ["home","loan","rate","term","ins","tax","closing","roll","cashout","pmiRate"]
+      .forEach((id) => $(id).addEventListener("input", calc));
+    calc();
+  </script>
+</body>
+</html>
